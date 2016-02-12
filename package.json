@@ -1,0 +1,29 @@
+{
+  "name": "laravel-config-to-js",
+  "version": "0.0.1",
+  "description": "Automatically export laravel config variables to javascript using annotation",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kotfire/laravel-config-to-js"
+  },
+  "keywords": [
+    "laravel",
+    "annotation",
+    "annotations",
+    "config"
+  ],
+  "author": "kotfire (https://github.com/kotfire)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/kotfire/laravel-config-to-js/issues"
+  },
+  "homepage": "https://github.com/kotfire/laravel-config-to-js",
+  "dependencies": {
+    "escodegen": "^1.8.0",
+    "esprima": "^2.7.2"
+  }
+}
