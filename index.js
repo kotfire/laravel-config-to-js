@@ -57,6 +57,22 @@ function hasJsVariableAnnotation(node) {
     return found;
 }
 
+function merge(a, b, depth) {
+    var forever = depth == null;
+    for (var p in b) {
+        if (b[p] != null && b[p].constructor==Object && (forever || depth > 0)) {
+            a[p] = util.mergeDeep(
+                a.hasOwnProperty(p) ? a[p] : {},
+                b[p],
+                forever ? null : depth-1
+            );
+        } else {
+            a[p] = b[p];
+        }
+    }
+    return a;
+}
+
 function buildJSConfig(options) {
     var defaultOptions = {
         configDirPath: './config',
@@ -64,7 +80,7 @@ function buildJSConfig(options) {
         namespace: 'Config',
     }
 
-    var options = options || defaultOptions;
+    var options = merge(defaultOptions, options, true);
 
     var config = {};
 
