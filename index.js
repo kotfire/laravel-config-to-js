@@ -12,7 +12,7 @@ function configToJS(data) {
     data = data.replace(/(["\'])((?:(?!\1).)*)(\1\s*=>\s*)(([^\s\n\r]*)::[^\s\n\r]*)/g, '');
     data = data.replace(/([^\s\n\r]*::[^\s\n\r]*)/g, '');
 
-    // Change to JS syntax
+    // Transform to JS syntax
     data = data.replace(/array\(|\[/g, '{').replace(/\)|]/g, '}').replace(/=>/g, ':').replace(/;/g, '').replace(/'/g, '"');
 
     // Change invalid syntax { {}, {} } for [ {}, {}, ]
@@ -36,8 +36,10 @@ function traverse(node, func, parents) {
                 func(child, parents);
             } else {
                 if (child.value.type === 'ObjectExpression') {
-                    parents.push(child.key.value);
-                    traverse(child.value.properties, func, parents);
+                    var childParents = parents;
+                    childParents.push(child.key.value);
+                    parents = [];
+                    traverse(child.value.properties, func, childParents);
                 }
             }
         }
@@ -92,7 +94,7 @@ function buildJSConfig(options) {
         body = ast.body[0];
 
         if (hasJsVariableAnnotation(body)) {
-            var declarations = escodegen.generate(body.declarations[0].init);
+            var declarations = eval(escodegen.generate(body.declarations[0]));
         } else {
             var declarations = {};
             traverse(body.declarations[0].init.properties, function(node, parents) {
@@ -106,14 +108,16 @@ function buildJSConfig(options) {
                 if (node.value.type === 'ArrayExpression') {
                     property[node.key.value] = node.value.elements;
                 } else {
-                    property[node.key.value] = escodegen.generate(node.value);
+                    eval('property.' + node.key.value + ' = ' + escodegen.generate(node.value));
                 }
             });
         }
 
         if (Object.keys(declarations).length > 0) {
             config[basename] = declarations;
+            delete config[basename][basename];
         }
+
     });
 
     var configContents = 'var ' + options.namespace + ' = ' + JSON.stringify(config, null, 4);

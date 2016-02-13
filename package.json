@@ -1,6 +1,6 @@
 {
   "name": "laravel-config-to-js",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Automatically export laravel config variables to javascript using annotation",
   "main": "index.js",
   "scripts": {
