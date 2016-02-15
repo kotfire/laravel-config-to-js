@@ -84,14 +84,13 @@ function buildJSConfig(options) {
 
     var options = merge(defaultOptions, options, true);
 
-    var config = {};
+    var jsConfig = {};
 
     fs.readdirSync(options.configDirPath).forEach(function (file) {
-        var content = fs.readFileSync(path.join(options.configDirPath, file), 'utf-8');
-
-        basename = path.basename(file, '.php'),
-        ast = esprima.parse(configToJS(content), {attachComment: true, tolerant: true}),
-        body = ast.body[0];
+        var content = fs.readFileSync(path.join(options.configDirPath, file), 'utf-8'),
+            basename = path.basename(file, '.php'),
+            ast = esprima.parse(configToJS(content), {attachComment: true, tolerant: true}),
+            body = ast.body[0];
 
         if (hasJsVariableAnnotation(body)) {
             var declarations = eval(escodegen.generate(body.declarations[0]));
@@ -114,13 +113,14 @@ function buildJSConfig(options) {
         }
 
         if (Object.keys(declarations).length > 0) {
-            config[basename] = declarations;
-            delete config[basename][basename];
+            jsConfig[basename] = declarations;
+            delete jsConfig[basename][basename];
+
         }
 
     });
 
-    var configContents = 'var ' + options.namespace + ' = ' + JSON.stringify(config, null, 4);
+    var configContents = 'var ' + options.namespace + ' = ' + JSON.stringify(jsConfig, null, 4);
 
     fs.writeFileSync(options.destFilePath, configContents, 'utf8');
 }
